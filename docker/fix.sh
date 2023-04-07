@@ -9,3 +9,4 @@ sudo docker exec -it docker_myapp_1 /opt/bitnami/php/bin/php artisan key:generat
 sudo docker exec -it docker_myapp_1 /opt/bitnami/php/bin/php artisan migrate:fresh --seed
 sudo docker exec -it docker_myapp_1 /opt/bitnami/php/bin/php artisan db:seed --class=UserTableSeeder
 mysql -u root -h 127.0.0.1 bitnami_myapp < ProjectSemester2Stations.sql
+mysql -u root -h 127.0.0.1 bitnami_myapp < weerdata.sql

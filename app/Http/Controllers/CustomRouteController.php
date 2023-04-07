@@ -30,7 +30,7 @@ class CustomRouteController extends Controller
     public function weerdata()
     {
         if(Auth::check()) {
-            $items = \App\Models\Weerdata::all();
+            $items = \App\Models\WeerData::all();
             $count = count($items);
             return view('weerdata', ["items" => $items, "count" => $count]);
         } else {

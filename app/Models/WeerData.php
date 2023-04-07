@@ -5,15 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Weerdata extends Model
+class WeerData extends Model
 {
-    use HasFactory;
-    public $timestamps = false;
     protected $table = 'weerdata';
+
     protected $fillable = [
-        'id',
-        'station_id',
-        'timestamp',
+        'date',
+        'time',
         'temp',
         'dewp',
         'stp',
@@ -22,8 +20,15 @@ class Weerdata extends Model
         'wdsp',
         'prcp',
         'sndp',
-        'frshtt',
         'cldc',
-        'wnddir'
+        'frshtt',
+        'wnddir',
+        'uuid',
     ];
+
+    protected $dates = [
+        'created_at',
+        'updated_at',
+    ];
+    use HasFactory;
 }

@@ -8,32 +8,41 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * @return void
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('weerdata', function (Blueprint $table) {
             $table->id();
-            $table->integer('station_id');
-            $table->datetime('timestamp');
-            $table->float('temp');
-            $table->float('dewp');
-            $table->float('stp');
-            $table->float('slp');
-            $table->float('visib');
-            $table->float('wdsp');
-            $table->float('prcp');
-            $table->float('sndp');
-            $table->float('frshtt');
-            $table->float('cldc');
-            $table->float('wnddir');
-            });
+            $table->integer('stn')->nullable();
+            $table->date('date')->nullable();
+            $table->time('time')->nullable();
+            $table->float('temp')->nullable();
+            $table->float('dewp')->nullable();
+            $table->float('stp')->nullable();
+            $table->float('slp')->nullable();
+            $table->float('visib')->nullable();
+            $table->float('wdsp')->nullable();
+            $table->float('prcp')->nullable();
+            $table->float('sndp')->nullable();
+            $table->float('cldc')->nullable();
+            $table->string('frshtt')->nullable();
+            $table->integer('wnddir')->nullable();
+
+            $table->string('uuid')->unique();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->nullable();
+        });
     }
 
     /**
      * Reverse the migrations.
+     *
+     * @return void
      */
-    public function down(): void
+    public function down()
     {
-        //
+        Schema::dropIfExists('weerdata');
     }
 };

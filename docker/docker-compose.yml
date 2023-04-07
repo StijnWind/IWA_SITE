@@ -23,4 +23,4 @@ services:
       - '../:/app'
     depends_on:
       - mariadb
-    #command: ["composer", "install", "-d", "/app"]
+        #command: ["composer", "install", "-d", "/app"]
