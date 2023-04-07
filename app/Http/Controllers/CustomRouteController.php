@@ -9,8 +9,11 @@ use Illuminate\Support\Facades\Auth;
 
 class CustomRouteController extends Controller
 {
-    public function stations()
+    public function stations($page = 1)
     {
+		$stations_per_page = 10;
+		$offsz = ($page - 1) * $stations_per_page;
+		$max_pages = ceil(\App\Models\Station::count() / $stations_per_page);
         if(Auth::check()) {
 
             // return view('stations', [
@@ -18,9 +21,9 @@ class CustomRouteController extends Controller
             //     (request(['search']))->get()
             // ]);
 
-            $items = \App\Models\Station::all();
+            $items = \App\Models\Station::with('geolocation')->skip($offsz)->take($stations_per_page)->get();
             $count = count($items);
-            return view('stations', ["items" => $items, "count" => $count]);
+            return view('stations', ["items" => $items, "count" => $count, "page" => $page, "stations_per_page" => $stations_per_page, "max_pages" => $max_pages]);
 
         } else {
             return redirect(url('login'))->with('error', 'U bent niet ingelogd!');

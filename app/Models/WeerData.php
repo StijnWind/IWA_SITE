@@ -31,4 +31,10 @@ class WeerData extends Model
         'updated_at',
     ];
     use HasFactory;
+	
+
+	public function station()
+	{
+		   return $this->belongsTo('App\Models\Station', 'stn', 'name');
+	}
 }

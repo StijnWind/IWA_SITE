@@ -17,6 +17,16 @@ class Station extends Model
         'latitude',
         'elevation',
     ];
+	
+	public function weerdata()
+	{
+		   return $this->hasMany('App\Models\WeerData', 'name', 'stn');
+	}
+	
+	public function geolocation()
+	{
+		   return $this->belongsTo(Geolocation::class, 'name', 'station_name');
+	}
 
     // public function scopeFilter($query, array $filters)
     // {

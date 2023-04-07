@@ -63,6 +63,7 @@
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Longitude</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Latitude</th>
                 <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Elevation</th>
+                <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Country</th>
                 <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
                   <span class="sr-only">Bekijk data</span>
                 </th>
@@ -76,6 +77,7 @@
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ $item['longitude'] }}</td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ $item['latitude'] }}</td>
                 <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ $item['elevation'] }}</td>
+                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ $item['geolocation']['country'] }}</td>
                 <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                   <a href="#" class="text-cyan-700 hover:text-cyan-900">Bekijk data</a>
                 </td>
@@ -85,7 +87,21 @@
             </tbody>
           </table>
         </div>
+
+		<div class="paginas text-center mt-8">
+		    @if ($page > 1)
+      <a href="{{ url('/stations/' . ($page - 1)) }}" class="float-left block w-40 rounded-md bg-slate-500 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-cyan-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-700">&larr; Vorige</a>
+		    @endif
+		    
+		    Pagina {{ $page }} / {{ $max_pages }}
+		    
+		    @if ($count == $stations_per_page)
+			
+      <a href="{{ url('/stations/' . ($page + 1)) }}" class="float-right block w-40 rounded-md bg-slate-500 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-cyan-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-700">Volgende &rarr;</a>
+		    @endif
+		</div>
       </div>
+
     </div>
   </div>
 </div>

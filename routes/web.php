@@ -28,7 +28,7 @@ Route::get('signout', [CustomAuthController::class, 'signOut'])->name('signout')
 
 // DEFAULT ROUTING
 
-Route::get('/stations', [CustomRouteController::class, 'stations'])->name('stations');
+Route::get('/stations/{page?}', [CustomRouteController::class, 'stations'])->name('stations');
 Route::get('/weerdata', [CustomRouteController::class, 'weerdata'])->name('weerdata');
 Route::get('/klanten', [CustomRouteController::class, 'klanten'])->name('klanten');
 Route::get('/team', [CustomRouteController::class, 'team'])->name('team');
