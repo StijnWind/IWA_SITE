@@ -6,6 +6,7 @@ use App\Http\Controllers\CustomRouteController;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Database\Eloquent\Model;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,11 +20,11 @@ Route::get('/', function () {return redirect(url('login'));});
 // INLOGGEN EN REGISTREREN
 Route::get('dashboard', [CustomAuthController::class, 'dashboard'])->name('dashboard');
 Route::get('login', [CustomAuthController::class, 'index'])->name('login')->name('login');
-Route::post('custom-login', [CustomAuthController::class, 'customLogin'])->name('login.custom'); 
+Route::post('custom-login', [CustomAuthController::class, 'customLogin'])->name('login.custom');
 Route::get('registration', [CustomAuthController::class, 'registration'])->name('register-user');
-Route::post('custom-registration', [CustomAuthController::class, 'customRegistration'])->name('register.custom'); 
-Route::post('custom-edit', [CustomAuthController::class, 'customEdit'])->name('edit.custom'); 
-Route::post('delete-user', [CustomAuthController::class, 'deleteUser'])->name('deleteuser'); 
+Route::post('custom-registration', [CustomAuthController::class, 'customRegistration'])->name('register.custom');
+Route::post('custom-edit', [CustomAuthController::class, 'customEdit'])->name('edit.custom');
+Route::post('delete-user', [CustomAuthController::class, 'deleteUser'])->name('deleteuser');
 Route::get('signout', [CustomAuthController::class, 'signOut'])->name('signout')->name('signout');
 
 // DEFAULT ROUTING
@@ -33,7 +34,7 @@ Route::get('/weerdata', [CustomRouteController::class, 'weerdata'])->name('weerd
 Route::get('/klanten', [CustomRouteController::class, 'klanten'])->name('klanten');
 Route::get('/team', [CustomRouteController::class, 'team'])->name('team');
 Route::get('/user/{id}', [CustomRouteController::class, 'werknemer'])->name('werknemer');
- 
+
 function var_dump_ret($mixed = null)
 {
 		 ob_start();
@@ -54,15 +55,52 @@ Route::post('/postWeatherData', function(Request $request)
     }
 
     $list = $json->WEATHERDATA;
+
     foreach($list as $data)
     {
         //{"STN":106350,"DATE":"2023-04-03", "TIME":"13:57:30", "TEMP":0.4, "DEWP":-2.0, "STP":985.2, "SLP":987.4, "VISIB":11.5, "WDSP":21.5, "PRCP":0.17, "SNDP":15.4, "FRSHTT":"111000", "CLDC":51.8, "WNDDIR":203}
+        $weerdataraw = new \App\Models\WeerDataRaw();
+//      Log::info(var_dump_ret($data));
+        $weerdataraw->stn = $data->STN;
+        $weerdataraw->date = $data->DATE;
+        $weerdataraw->time = $data->TIME;
+        $weerdataraw->temp = $data->TEMP;
+        $weerdataraw->dewp = $data->DEWP;
+        $weerdataraw->stp = $data->STP;
+        $weerdataraw->slp = $data->SLP;
+        $weerdataraw->visib = $data->VISIB;
+        $weerdataraw->wdsp = $data->WDSP;
+        $weerdataraw->prcp = $data->PRCP;
+        $weerdataraw->sndp = $data->SNDP;
+        $weerdataraw->frshtt = $data->FRSHTT;
+        $weerdataraw->cldc = $data->CLDC;
+        $weerdataraw->wnddir = $data->WNDDIR;
+    //  $weerdataraw->date = Carbon\Carbon::now();
+        $weerdataraw->uuid = Str::uuid();
+        $weerdataraw->save();
+        //{"STN":106350,"DATE":"2023-04-03", "TIME":"13:57:30", "TEMP":0.4, "DEWP":-2.0, "STP":985.2, "SLP":987.4, "VISIB":11.5, "WDSP":21.5, "PRCP":0.17, "SNDP":15.4, "FRSHTT":"111000", "CLDC":51.8, "WNDDIR":203}
         $weerdata = new \App\Models\WeerData();
 //      Log::info(var_dump_ret($data));
+        function get30rec($stn)
+        {
+        $weerDataRecords = \App\Models\WeerDataRaw::where('stn', $stn)
+            ->orderBy('created_at', 'desc')
+            ->limit(30)
+            ->get();
+            return $weerDataRecords;
+        }
+        $last30Records = get30rec($data->STN);
+        $extrapolatedTemperature = null;
+        $count = $last30Records->count();
+        if ($last30Records->count() > 1) {
+            $temperatureDifference = $last30Records->first()->temp - $last30Records->skip(1)->first()->temp;
+            $extrapolatedTemperature = $last30Records->first()->temp + ($temperatureDifference * ($count - 1));
+        }
+
         $weerdata->stn = $data->STN;
         $weerdata->date = $data->DATE;
         $weerdata->time = $data->TIME;
-        $weerdata->temp = $data->TEMP;
+        $weerdata->temp = $extrapolatedTemperature;
         $weerdata->dewp = $data->DEWP;
         $weerdata->stp = $data->STP;
         $weerdata->slp = $data->SLP;
@@ -73,11 +111,11 @@ Route::post('/postWeatherData', function(Request $request)
         $weerdata->frshtt = $data->FRSHTT;
         $weerdata->cldc = $data->CLDC;
         $weerdata->wnddir = $data->WNDDIR;
-    //  $weerdata->date = Carbon\Carbon::now();
+        //  $weerdata->date = Carbon\Carbon::now();
         $weerdata->uuid = Str::uuid();
         $weerdata->save();
     }
-//  Log::info($json);
+Log::info($json);
     return response()->json([
         'success' => true
     ]);
