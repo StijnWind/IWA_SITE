@@ -9,6 +9,14 @@ use Illuminate\Support\Facades\Auth;
 
 class CustomRouteController extends Controller
 {
+	private function checkLogin()
+	{
+		//Zou beter zijn om gebruik te maken van auth middleware, maar goed dit werkt ook.
+		if(!Auth::check())
+            return redirect(url('login'))->with('error', 'U bent niet ingelogd!');
+		return null;
+	}
+
     public function stations($page = 1)
     {
 		$stations_per_page = 10;
@@ -28,6 +36,18 @@ class CustomRouteController extends Controller
         } else {
             return redirect(url('login'))->with('error', 'U bent niet ingelogd!');
         }
+    }
+
+    public function station($station_id)
+    {
+		$ret = $this->checkLogin();
+		if($ret !== null)
+				return $ret;
+
+        $station = \App\Models\Station::with('weerdata')->where('name', $station_id)->first();
+        //dd($station);
+        $wd = $station->weerdata;
+    	return view('station', ["station" => $station, "weerdata" => $wd]);
     }
 
     public function weerdata()

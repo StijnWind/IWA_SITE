@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
+use App\Http\Controllers\StationController;
+use App\Http\Controllers\WeerDataController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,20 +31,10 @@ Route::get('signout', [CustomAuthController::class, 'signOut'])->name('signout')
 
 // DEFAULT ROUTING
 
-Route::get('/stations/{page?}', [CustomRouteController::class, 'stations'])->name('stations');
 Route::get('/weerdata', [CustomRouteController::class, 'weerdata'])->name('weerdata');
 Route::get('/klanten', [CustomRouteController::class, 'klanten'])->name('klanten');
 Route::get('/team', [CustomRouteController::class, 'team'])->name('team');
 Route::get('/user/{id}', [CustomRouteController::class, 'werknemer'])->name('werknemer');
-
-function var_dump_ret($mixed = null)
-{
-		 ob_start();
-		 var_dump($mixed);
-		 $content = ob_get_contents();
-		 ob_end_clean();
-		 return $content;
-}
 
 Route::post('/postWeatherData', function(Request $request)
 {
@@ -126,3 +118,17 @@ Route::get('/test', function()
     $items = \App\Models\Station::all();
     return view('test', ["items" => $items]);
 })->middleware('auth');
+
+
+// stations lijst
+Route::get('/stations/{page?}', [CustomRouteController::class, 'stations'])->name('stations.index');
+
+// per station info
+Route::get('/station/{id}', [CustomRouteController::class, 'station'])->name('station.show')->middleware('auth');
+
+// aanmaken station
+Route::get('/create/station', [StationController::class, 'create'])->name('station.create');
+Route::post('/create/station', [StationController::class, 'store'])->name('station.store');
+
+Route::get('/weerdata/{id}/edit', [WeerDataController::class, 'edit'])->name('weerdata.edit');
+Route::put('/weerdata/{id}/edit', [WeerDataController::class, 'update'])->name('weerdata.update');

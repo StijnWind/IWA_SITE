@@ -35,6 +35,6 @@ class WeerData extends Model
 
 	public function station()
 	{
-		   return $this->belongsTo('App\Models\Station', 'stn', 'name');
+		   return $this->belongsTo('App\Models\Station', 'name', 'stn');
 	}
 }

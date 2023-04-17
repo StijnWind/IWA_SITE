@@ -10,8 +10,8 @@ class Station extends Model
     use HasFactory;
     public $timestamps = false;
     protected $table = 'station';
+    protected $primaryKey = 'name';
     protected $fillable = [
-        'id',
         'name',
         'longitude',
         'latitude',
@@ -20,7 +20,7 @@ class Station extends Model
 	
 	public function weerdata()
 	{
-		   return $this->hasMany('App\Models\WeerData', 'name', 'stn');
+		   return $this->hasMany('App\Models\WeerData', 'stn', 'name');
 	}
 	
 	public function geolocation()
