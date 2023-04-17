@@ -3,34 +3,34 @@
 @section('nav')
 
 <nav class="hidden lg:flex lg:space-x-8 lg:py-2" aria-label="Global">
-    <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-    <a href="{{ url('dashboard') }}" class="text-gray-300 hover:bg-black/10 hover:text-white inline-flex items-center rounded-md py-2 px-3 text-sm font-medium" aria-current="page">Dashboard</a>
+  <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
+  <a href="{{ url('dashboard') }}" class="text-gray-300 hover:bg-black/10 hover:text-white inline-flex items-center rounded-md py-2 px-3 text-sm font-medium" aria-current="page">Dashboard</a>
 
-    <a href="{{ url('stations') }}" class="bg-black/20 text-white inline-flex items-center rounded-md py-2 px-3 text-sm font-medium">Stations</a>
+  <a href="{{ url('stations') }}" class="bg-black/20 text-white inline-flex items-center rounded-md py-2 px-3 text-sm font-medium">Stations</a>
 
-    <a href="{{ url('weerdata') }}" class="text-gray-300 hover:bg-black/10 hover:text-white inline-flex items-center rounded-md py-2 px-3 text-sm font-medium">Weerdata</a>
+  <a href="{{ url('weerdata') }}" class="text-gray-300 hover:bg-black/10 hover:text-white inline-flex items-center rounded-md py-2 px-3 text-sm font-medium">Weerdata</a>
 
-    <a href="{{ url('klanten') }}" class="text-gray-300 hover:bg-black/10 hover:text-white inline-flex items-center rounded-md py-2 px-3 text-sm font-medium">Klanten</a>
+  <a href="{{ url('klanten') }}" class="text-gray-300 hover:bg-black/10 hover:text-white inline-flex items-center rounded-md py-2 px-3 text-sm font-medium">Klanten</a>
 
-    <a href="{{ url('team') }}" class="text-gray-300 hover:bg-black/10 hover:text-white inline-flex items-center rounded-md py-2 px-3 text-sm font-medium">Team</a>
-  </nav>
+  <a href="{{ url('team') }}" class="text-gray-300 hover:bg-black/10 hover:text-white inline-flex items-center rounded-md py-2 px-3 text-sm font-medium">Team</a>
+</nav>
 
 @endsection
 
 @section('nav-mobile')
 
 <div class="space-y-1 px-2 pt-2 pb-3">
-    <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
-    <a href="{{ url('dashboard') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md py-2 px-3 text-base font-medium" aria-current="page">Dashboard</a>
+  <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
+  <a href="{{ url('dashboard') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md py-2 px-3 text-base font-medium" aria-current="page">Dashboard</a>
 
-    <a href="{{ url('stations') }}" class="bg-gray-900 text-white block rounded-md py-2 px-3 text-base font-medium">Stations</a>
+  <a href="{{ url('stations') }}" class="bg-gray-900 text-white block rounded-md py-2 px-3 text-base font-medium">Stations</a>
 
-    <a href="{{ url('weerdata') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md py-2 px-3 text-base font-medium">Weerdata</a>
+  <a href="{{ url('weerdata') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md py-2 px-3 text-base font-medium">Weerdata</a>
 
-    <a href="{{ url('klanten') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md py-2 px-3 text-base font-medium">Klanten</a>
+  <a href="{{ url('klanten') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md py-2 px-3 text-base font-medium">Klanten</a>
 
-    <a href="{{ url('team') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md py-2 px-3 text-base font-medium">Team</a>
-  </div>
+  <a href="{{ url('team') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white block rounded-md py-2 px-3 text-base font-medium">Team</a>
+</div>
 
 @endsection
 
@@ -53,6 +53,17 @@
     </div>
   </div>
   <div class="mt-8 flow-root">
+    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+      <strong class="font-bold">Waarschuwing!</strong>
+      <span class="block sm:inline">De volgende stations hebben missende data:</span>
+      <ul class="list-disc ml-5">
+        @foreach ($missing_data as $station)
+        <li><a href="{{ route('station.show', ['id' => $station->name]) }}">{{ $station->name }}</a></li>
+        @endforeach
+      </ul>
+    </div>
+
+
     <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
       <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
         <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
@@ -88,18 +99,18 @@
           </table>
         </div>
 
-		<div class="paginas text-center mt-8">
-		    @if ($page > 1)
-      <a href="{{ url('/stations/' . ($page - 1)) }}" class="float-left block w-40 rounded-md bg-slate-500 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-cyan-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-700">&larr; Vorige</a>
-		    @endif
-		    
-		    Pagina {{ $page }} / {{ $max_pages }}
-		    
-		    @if ($count == $stations_per_page)
-			
-      <a href="{{ url('/stations/' . ($page + 1)) }}" class="float-right block w-40 rounded-md bg-slate-500 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-cyan-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-700">Volgende &rarr;</a>
-		    @endif
-		</div>
+        <div class="paginas text-center mt-8">
+          @if ($page > 1)
+          <a href="{{ url('/stations/' . ($page - 1)) }}" class="float-left block w-40 rounded-md bg-slate-500 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-cyan-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-700">&larr; Vorige</a>
+          @endif
+
+          Pagina {{ $page }} / {{ $max_pages }}
+
+          @if ($count == $stations_per_page)
+
+          <a href="{{ url('/stations/' . ($page + 1)) }}" class="float-right block w-40 rounded-md bg-slate-500 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-cyan-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-700">Volgende &rarr;</a>
+          @endif
+        </div>
       </div>
 
     </div>

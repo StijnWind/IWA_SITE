@@ -9,20 +9,24 @@ use Illuminate\Support\Facades\Auth;
 
 class CustomRouteController extends Controller
 {
-	private function checkLogin()
-	{
-		//Zou beter zijn om gebruik te maken van auth middleware, maar goed dit werkt ook.
-		if(!Auth::check())
+    private function checkLogin()
+    {
+        //Zou beter zijn om gebruik te maken van auth middleware, maar goed dit werkt ook.
+        if (!Auth::check())
             return redirect(url('login'))->with('error', 'U bent niet ingelogd!');
-		return null;
-	}
+        return null;
+    }
 
     public function stations($page = 1)
     {
-		$stations_per_page = 10;
-		$offsz = ($page - 1) * $stations_per_page;
-		$max_pages = ceil(\App\Models\Station::count() / $stations_per_page);
-        if(Auth::check()) {
+        $stations_per_page = 10;
+        $offsz = ($page - 1) * $stations_per_page;
+        $max_pages = ceil(\App\Models\Station::count() / $stations_per_page);
+        if (Auth::check()) {
+            $missing_data = Station::whereHas('weerdata', function ($query)
+            {
+                $query->whereNull('temp')->orWhereNull('dewp')->orWhereNull('stp')->orWhereNull('slp')->orWhereNull('visib')->orWhereNull('wdsp')->orWhereNull('prcp')->orWhereNull('sndp')->orWhereNull('cldc')->orWhereNull('frshtt')->orWhereNull('wnddir');
+            })->get();
 
             // return view('stations', [
             //     'items' => Station::latest()->filter
@@ -31,8 +35,7 @@ class CustomRouteController extends Controller
 
             $items = \App\Models\Station::with('geolocation')->skip($offsz)->take($stations_per_page)->get();
             $count = count($items);
-            return view('stations', ["items" => $items, "count" => $count, "page" => $page, "stations_per_page" => $stations_per_page, "max_pages" => $max_pages]);
-
+            return view('stations', ["items" => $items, "count" => $count, "page" => $page, "stations_per_page" => $stations_per_page, "max_pages" => $max_pages, "missing_data" => $missing_data]);
         } else {
             return redirect(url('login'))->with('error', 'U bent niet ingelogd!');
         }
@@ -40,19 +43,19 @@ class CustomRouteController extends Controller
 
     public function station($station_id)
     {
-		$ret = $this->checkLogin();
-		if($ret !== null)
-				return $ret;
+        $ret = $this->checkLogin();
+        if ($ret !== null)
+            return $ret;
 
         $station = \App\Models\Station::with('weerdata')->where('name', $station_id)->first();
         //dd($station);
         $wd = $station->weerdata;
-    	return view('station', ["station" => $station, "weerdata" => $wd]);
+        return view('station', ["station" => $station, "weerdata" => $wd]);
     }
 
     public function weerdata()
     {
-        if(Auth::check()) {
+        if (Auth::check()) {
             $items = \App\Models\WeerData::all();
             $count = count($items);
             return view('weerdata', ["items" => $items, "count" => $count]);
@@ -63,7 +66,7 @@ class CustomRouteController extends Controller
 
     public function klanten()
     {
-        if(Auth::check()) {
+        if (Auth::check()) {
             return view('klanten');
         } else {
             return redirect(url('login'))->with('error', 'U bent niet ingelogd!');
@@ -72,7 +75,7 @@ class CustomRouteController extends Controller
 
     public function team()
     {
-        if(Auth::check()) {
+        if (Auth::check()) {
             $users = \App\Models\User::all();
             return view('team', ["users" => $users]);
         } else {
@@ -82,8 +85,8 @@ class CustomRouteController extends Controller
 
     public function werknemer($id)
     {
-        if(Auth::check()) {
-            if(Auth::user()->rol == 'Administrator' || Auth::user()->id == $id) {
+        if (Auth::check()) {
+            if (Auth::user()->rol == 'Administrator' || Auth::user()->id == $id) {
                 $user = \App\Models\User::find($id);
                 $me = Auth::user();
                 return view('user', ["user" => $user, "me" => $me]);
@@ -94,5 +97,4 @@ class CustomRouteController extends Controller
             return redirect(url('login'))->with('error', 'U bent niet ingelogd!');
         }
     }
-
 }
